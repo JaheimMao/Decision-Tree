@@ -1,4 +1,4 @@
-function[data] = getdata(fname)
+function[data] = GetData(fname)
 %fname = 'dna.data';
 fid = fopen(fname, 'rt');
 dataInput = textscan(fid, '%s');
