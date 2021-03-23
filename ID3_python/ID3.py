@@ -1,6 +1,35 @@
-import Decision_Tree
-import GetData
+import math
+import operator
 
+
+def cal_entropy(dataset):
+    numEntries = len(dataset)
+    labelCounts = {}
+    # 给所有可能分类创建字典
+    for featVec in dataset:
+        currentlabel = featVec[-1]
+        if currentlabel not in labelCounts.keys():
+            labelCounts[currentlabel] = 0
+        labelCounts[currentlabel] += 1
+    Ent = 0.0
+    for key in labelCounts:
+        p = float(labelCounts[key]) / numEntries
+        Ent = Ent - p * math.log(p, 2)  # 以2为底求对数
+    return Ent
+
+
+# 划分数据集
+def splitdataset(dataset, axis, value):
+    retdataset = []  # 创建返回的数据集列表
+    for featVec in dataset:  # 抽取符合划分特征的值
+        if featVec[axis] == value:
+            reducedfeatVec = featVec[:axis]  # 去掉axis特征
+            reducedfeatVec.extend(featVec[axis + 1:])  # 将符合条件的特征添加到返回的数据集列表
+            retdataset.append(reducedfeatVec)
+    return retdataset
+
+
+# 根据计算得到的信息熵，选择属性
 def ID3_chooseBestFeatureToSplit(dataset):
     numFeatures = len(dataset[0]) - 1
     baseEnt = cal_entropy(dataset)
@@ -23,6 +52,21 @@ def ID3_chooseBestFeatureToSplit(dataset):
             bestFeature = i
     return bestFeature
 
+
+def majorityCnt(classList):
+    '''
+    数据集已经处理了所有属性，但是类标签依然不是唯一的，
+    此时我们需要决定如何定义该叶子节点，在这种情况下，我们通常会采用多数表决的方法决定该叶子节点的分类
+    '''
+    classCont = {}
+    for vote in classList:
+        if vote not in classCont.keys():
+            classCont[vote] = 0
+        classCont[vote] += 1
+    sortedClassCont = sorted(classCont.items(), key=operator.itemgetter(1), reverse=True)
+    return sortedClassCont[0][0]
+
+
 # 利用ID3算法创建决策树
 def ID3_createTree(dataset, labels, test_dataset):
     classList = [example[-1] for example in dataset]
@@ -42,31 +86,31 @@ def ID3_createTree(dataset, labels, test_dataset):
     featValues = [example[bestFeat] for example in dataset]
     uniqueVals = set(featValues)
 
-    if pre_pruning:
-        ans = []
-        for index in range(len(test_dataset)):
-            ans.append(test_dataset[index][-1])
-        result_counter = Counter()
-        for vec in dataset:
-            result_counter[vec[-1]] += 1
-        leaf_output = result_counter.most_common(1)[0][0]
-        root_acc = cal_acc(test_output=[leaf_output] * len(test_dataset), label=ans)
-        outputs = []
-        ans = []
-        for value in uniqueVals:
-            cut_testset = splitdataset(test_dataset, bestFeat, value)
-            cut_dataset = splitdataset(dataset, bestFeat, value)
-            for vec in cut_testset:
-                ans.append(vec[-1])
-            result_counter = Counter()
-            for vec in cut_dataset:
-                result_counter[vec[-1]] += 1
-            leaf_output = result_counter.most_common(1)[0][0]
-            outputs += [leaf_output] * len(cut_testset)
-        cut_acc = cal_acc(test_output=outputs, label=ans)
+    # if pre_pruning:
+    #     ans = []
+    #     for index in range(len(test_dataset)):
+    #         ans.append(test_dataset[index][-1])
+    #     result_counter = Counter()
+    #     for vec in dataset:
+    #         result_counter[vec[-1]] += 1
+    #     leaf_output = result_counter.most_common(1)[0][0]
+    #     root_acc = cal_acc(test_output=[leaf_output] * len(test_dataset), label=ans)
+    #     outputs = []
+    #     ans = []
+    #     for value in uniqueVals:
+    #         cut_testset = splitdataset(test_dataset, bestFeat, value)
+    #         cut_dataset = splitdataset(dataset, bestFeat, value)
+    #         for vec in cut_testset:
+    #             ans.append(vec[-1])
+    #         result_counter = Counter()
+    #         for vec in cut_dataset:
+    #             result_counter[vec[-1]] += 1
+    #         leaf_output = result_counter.most_common(1)[0][0]
+    #         outputs += [leaf_output] * len(cut_testset)
+    #     cut_acc = cal_acc(test_output=outputs, label=ans)
 
-        if cut_acc <= root_acc:
-            return leaf_output
+    #     if cut_acc <= root_acc:
+    #         return leaf_output
 
     for value in uniqueVals:
         subLabels = labels[:]
@@ -75,21 +119,21 @@ def ID3_createTree(dataset, labels, test_dataset):
             subLabels,
             splitdataset(test_dataset, bestFeat, value))
 
-    if post_pruning:
-        tree_output = classifytest(ID3Tree,
-                                   featLabels=['年龄段', '有工作', '有自己的房子', '信贷情况'],
-                                   testDataSet=test_dataset)
-        ans = []
-        for vec in test_dataset:
-            ans.append(vec[-1])
-        root_acc = cal_acc(tree_output, ans)
-        result_counter = Counter()
-        for vec in dataset:
-            result_counter[vec[-1]] += 1
-        leaf_output = result_counter.most_common(1)[0][0]
-        cut_acc = cal_acc([leaf_output] * len(test_dataset), ans)
+    # if post_pruning:
+    #     tree_output = classifytest(ID3Tree,
+    #                                featLabels=['年龄段', '有工作', '有自己的房子', '信贷情况'],
+    #                                testDataSet=test_dataset)
+    #     ans = []
+    #     for vec in test_dataset:
+    #         ans.append(vec[-1])
+    #     root_acc = cal_acc(tree_output, ans)
+    #     result_counter = Counter()
+    #     for vec in dataset:
+    #         result_counter[vec[-1]] += 1
+    #     leaf_output = result_counter.most_common(1)[0][0]
+    #     cut_acc = cal_acc([leaf_output] * len(test_dataset), ans)
 
-        if cut_acc >= root_acc:
-            return leaf_output
+    #     if cut_acc >= root_acc:
+    #         return leaf_output
 
     return ID3Tree

@@ -1,6 +1,7 @@
 import GetData
+import TreePlotter
 import ID3
-from GetData import read_dataset
+
 
 def classify(inputTree, featLabels, testVec):
     """
@@ -47,35 +48,40 @@ def cal_acc(test_output, label):
 
     return float(count / len(test_output))
 
+
 if __name__ == '__main__':
-    filename = 'dataset.txt'
-    testfile = 'testset.txt'
-    dataset, labels = read_dataset(filename)
-    # dataset,features=createDataSet()
+    filename = '..\data\dna.data'
+    testfile = '..\data\dna.test'
+
+    dataset, labels = GetData.read_dataset(filename)
+
     print('dataset', dataset)
     print("---------------------------------------------")
     print(u"数据集长度", len(dataset))
-    print("Ent(D):", cal_entropy(dataset))
+    print("Ent(D):", ID3.cal_entropy(dataset))
     print("---------------------------------------------")
 
     print(u"以下为首次寻找最优索引:\n")
-    print(u"ID3算法的最优特征索引为:" + str(ID3_chooseBestFeatureToSplit(dataset)))
+    print(u"ID3算法的最优特征索引为:" + str(ID3.ID3_chooseBestFeatureToSplit(dataset)))
     print(u"首次寻找最优索引结束！")
     print("---------------------------------------------")
 
     print(u"下面开始创建相应的决策树-------")
 
-    while True:
-        dec_tree = '1'
-        # ID3决策树
-        if dec_tree == '1':
-            labels_tmp = labels[:]  # 拷贝，createTree会改变labels
-            ID3desicionTree = ID3_createTree(dataset, labels_tmp, test_dataset=read_testset(testfile))
-            print('ID3desicionTree:\n', ID3desicionTree)
-            # treePlotter.createPlot(ID3desicionTree)
-            treePlotter.ID3_Tree(ID3desicionTree)
-            testSet = read_testset(testfile)
-            print("下面为测试数据集结果：")
-            print('ID3_TestSet_classifyResult:\n', classifytest(ID3desicionTree, labels, testSet))
-            print("---------------------------------------------")
-        break
+    labels_tmp = labels[:]  # 拷贝，createTree会改变labels
+    ID3desicionTree = ID3.ID3_createTree(dataset, labels_tmp, test_dataset=GetData.read_dataset(testfile))
+    print('ID3desicionTree:\n', ID3desicionTree)
+
+    TreePlotter.ID3_Tree(ID3desicionTree)
+    testSet = GetData.read_dataset(testfile)[0]
+    print("下面为测试数据集结果：")
+    print('ID3_TestSet_classifyResult:')
+    result = classifytest(ID3desicionTree, labels, testSet)
+    print(result)
+    correct = 0
+    for cal_accuracy in range(len(testSet)):
+        if result[cal_accuracy] == testSet[cal_accuracy][len(testSet[0])-1]:
+            correct = correct + 1
+    accuracy = correct / len(testSet)
+    print("正确率为：", accuracy)
+    print("---------------------------------------------")
