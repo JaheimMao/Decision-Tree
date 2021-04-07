@@ -1,4 +1,16 @@
-function[data] = GetData(fname)
+function [data] = GetData(fname)
+
+% GetData  Get the data from the txt and translate the 1s and 0s into value. 
+%       A -> 1 0 0      C -> 0 1 0
+%       G -> 0 0 1      T -> 0 0 0
+% The class values are 
+%       ei -> 1     ie -> 2
+%       n  -> 3
+% args:
+%   fname  - The location of the file
+% return:
+%   data   - The data in file
+
 %fname = 'dna.data';
 fid = fopen(fname, 'rt');
 dataInput = textscan(fid, '%s');
