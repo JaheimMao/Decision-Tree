@@ -3,14 +3,22 @@ import operator
 
 
 def cal_entropy(dataset):
+    """
+    Calculate the entropy of the dataset
+
+    :param dataset: The dataset which need to calculate the entropy
+    :return:
+        Ent: The entropy of the dataset
+    """
+
     numEntries = len(dataset)
     labelCounts = {}
     # 给所有可能分类创建字典
     for featVec in dataset:
-        currentlabel = featVec[-1]
-        if currentlabel not in labelCounts.keys():
-            labelCounts[currentlabel] = 0
-        labelCounts[currentlabel] += 1
+        currentLabel = featVec[-1]
+        if currentLabel not in labelCounts.keys():
+            labelCounts[currentLabel] = 0
+        labelCounts[currentLabel] += 1
     Ent = 0.0
     for key in labelCounts:
         p = float(labelCounts[key]) / numEntries
@@ -86,54 +94,11 @@ def ID3_createTree(dataset, labels, test_dataset):
     featValues = [example[bestFeat] for example in dataset]
     uniqueVals = set(featValues)
 
-    # if pre_pruning:
-    #     ans = []
-    #     for index in range(len(test_dataset)):
-    #         ans.append(test_dataset[index][-1])
-    #     result_counter = Counter()
-    #     for vec in dataset:
-    #         result_counter[vec[-1]] += 1
-    #     leaf_output = result_counter.most_common(1)[0][0]
-    #     root_acc = cal_acc(test_output=[leaf_output] * len(test_dataset), label=ans)
-    #     outputs = []
-    #     ans = []
-    #     for value in uniqueVals:
-    #         cut_testset = splitdataset(test_dataset, bestFeat, value)
-    #         cut_dataset = splitdataset(dataset, bestFeat, value)
-    #         for vec in cut_testset:
-    #             ans.append(vec[-1])
-    #         result_counter = Counter()
-    #         for vec in cut_dataset:
-    #             result_counter[vec[-1]] += 1
-    #         leaf_output = result_counter.most_common(1)[0][0]
-    #         outputs += [leaf_output] * len(cut_testset)
-    #     cut_acc = cal_acc(test_output=outputs, label=ans)
-
-    #     if cut_acc <= root_acc:
-    #         return leaf_output
-
     for value in uniqueVals:
         subLabels = labels[:]
         ID3Tree[bestFeatLabel][value] = ID3_createTree(
             splitdataset(dataset, bestFeat, value),
             subLabels,
             splitdataset(test_dataset, bestFeat, value))
-
-    # if post_pruning:
-    #     tree_output = classifytest(ID3Tree,
-    #                                featLabels=['年龄段', '有工作', '有自己的房子', '信贷情况'],
-    #                                testDataSet=test_dataset)
-    #     ans = []
-    #     for vec in test_dataset:
-    #         ans.append(vec[-1])
-    #     root_acc = cal_acc(tree_output, ans)
-    #     result_counter = Counter()
-    #     for vec in dataset:
-    #         result_counter[vec[-1]] += 1
-    #     leaf_output = result_counter.most_common(1)[0][0]
-    #     cut_acc = cal_acc([leaf_output] * len(test_dataset), ans)
-
-    #     if cut_acc >= root_acc:
-    #         return leaf_output
 
     return ID3Tree

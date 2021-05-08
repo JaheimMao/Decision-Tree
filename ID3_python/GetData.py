@@ -1,12 +1,16 @@
-"""
+def read_dataset(fileName):
+    """
     ge[0:59]代表不同位置的碱基对，分别为A，C，G，T
     A-->1 0 0;C-->0 1 0;G-->0 0 1;T-->0 0 0
     分类结果：ei-->1;ie-->2;n -->3
-"""
 
+    :param fileName: The Location of the dataset file
+    :return:
+        dataset: The dataset which has been translated
+        labels: The label of the dataset
+    """
 
-def read_dataset(filename):
-    fr = open(filename, 'r')
+    fr = open(fileName, 'r')
     all_lines = fr.readlines()  # list形式,每行为1个str
     # 从文件中读取原始数据，存入list
     data = []
