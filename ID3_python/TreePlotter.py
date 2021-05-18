@@ -77,7 +77,7 @@ def createPlot(inTree):
 
 # ID3决策树
 def ID3_Tree(inTree):
-    fig = plt.figure(1, facecolor='white')
+    fig = plt.figure(figsize=(90, 20), facecolor='white')
     fig.clf()
     axprops = dict(xticks=[], yticks=[])
     createPlot.ax1 = plt.subplot(111, frameon=False, **axprops)

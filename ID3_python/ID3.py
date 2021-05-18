@@ -1,4 +1,5 @@
 import math
+import operator
 
 def cal_entropy(dataset):
     """

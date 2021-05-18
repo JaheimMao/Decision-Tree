@@ -1,7 +1,6 @@
 import GetData
-import TreePlotter
 import ID3
-
+import TreePlotter
 
 def classify(inputTree, featLabels, testVec):
     """
@@ -50,23 +49,23 @@ def cal_acc(test_output, label):
 
 
 if __name__ == '__main__':
-    filename = '..\data\dna.data'
-    testfile = '..\data\dna.test'
+    filename = 'data\dna.data'
+    testfile = 'data\dna.test'
 
     dataset, labels = GetData.read_dataset(filename)
 
     print('dataset', dataset)
     print("---------------------------------------------")
-    print(u"数据集长度", len(dataset))
+    print("数据集长度", len(dataset))
     print("Ent(D):", ID3.cal_entropy(dataset))
     print("---------------------------------------------")
 
-    print(u"以下为首次寻找最优索引:\n")
-    print(u"ID3算法的最优特征索引为:" + str(ID3.ID3_chooseBestFeatureToSplit(dataset)))
-    print(u"首次寻找最优索引结束！")
+    print("以下为首次寻找最优索引:\n")
+    print("ID3算法的最优特征索引为:" + str(ID3.ID3_chooseBestFeatureToSplit(dataset)))
+    print("首次寻找最优索引结束！")
     print("---------------------------------------------")
 
-    print(u"下面开始创建相应的决策树-------")
+    print("下面开始创建相应的决策树-------")
 
     labels_tmp = labels[:]  # 拷贝，createTree会改变labels
     ID3desicionTree = ID3.ID3_createTree(dataset, labels_tmp, test_dataset=GetData.read_dataset(testfile))
