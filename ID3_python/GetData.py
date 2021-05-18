@@ -41,5 +41,6 @@ def read_dataset(fileName):
 
 
 if __name__ == '__main__':
-    filename = '..\data\dna.data'
-    read_dataset(filename)
+    filename = 'data\dna.data'
+    print(read_dataset(filename)[0])
+    

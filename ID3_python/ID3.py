@@ -1,6 +1,4 @@
 import math
-import operator
-
 
 def cal_entropy(dataset):
     """
@@ -54,7 +52,7 @@ def ID3_chooseBestFeatureToSplit(dataset):
             p = len(subdataset) / float(len(dataset))
             newEnt += p * cal_entropy(subdataset)
         infoGain = baseEnt - newEnt
-        print(u"ID3中第%d个特征的信息增益为：%.3f" % (i, infoGain))
+        print("ID3中第%d个特征的信息增益为：%.3f" % (i, infoGain))
         if (infoGain > bestInfoGain):
             bestInfoGain = infoGain  # 计算最好的信息增益
             bestFeature = i
@@ -86,7 +84,7 @@ def ID3_createTree(dataset, labels, test_dataset):
         return majorityCnt(classList)
     bestFeat = ID3_chooseBestFeatureToSplit(dataset)
     bestFeatLabel = labels[bestFeat]
-    print(u"此时最优索引为：" + (bestFeatLabel))
+    print("此时最优索引为：" + (bestFeatLabel))
 
     ID3Tree = {bestFeatLabel: {}}
     del (labels[bestFeat])
