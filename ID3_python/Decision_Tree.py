@@ -11,9 +11,12 @@ def classify(inputTree, featLabels, testVec):
     firstStr = list(inputTree.keys())[0]
     secondDict = inputTree[firstStr]
     featIndex = featLabels.index(firstStr)
-    classLabel = '0'
+    # 初始化标签，如果没有在决策树中找到结果，则返回的值为默认的'n'
+    classLabel = 'n'
+    # 遍历树，secondDict.keys()获取所有的键
     for key in secondDict.keys():
         if testVec[featIndex] == key:
+            # 判断键是否为字典，键名和其值就组成了一个字典，如果是字典则通过递归继续遍历，寻找叶子节点
             if type(secondDict[key]).__name__ == 'dict':
                 classLabel = classify(secondDict[key], featLabels, testVec)
             else:
@@ -33,21 +36,6 @@ def classifytest(inputTree, featLabels, testDataSet):
     return classLabelAll
 
 
-def cal_acc(test_output, label):
-    """
-    :param test_output: the output of testset
-    :param label: the answer
-    :return: the acc of
-    """
-    assert len(test_output) == len(label)
-    count = 0
-    for index in range(len(test_output)):
-        if test_output[index] == label[index]:
-            count += 1
-
-    return float(count / len(test_output))
-
-
 if __name__ == '__main__':
     filename = 'data\dna.data'
     testfile = 'data\dna.test'
@@ -60,18 +48,14 @@ if __name__ == '__main__':
     print("Ent(D):", ID3.cal_entropy(dataset))
     print("---------------------------------------------")
 
-    print("以下为首次寻找最优索引:\n")
-    print("ID3算法的最优特征索引为:" + str(ID3.ID3_chooseBestFeatureToSplit(dataset)))
-    print("首次寻找最优索引结束！")
-    print("---------------------------------------------")
-
     print("下面开始创建相应的决策树-------")
 
     labels_tmp = labels[:]  # 拷贝，createTree会改变labels
-    ID3desicionTree = ID3.ID3_createTree(dataset, labels_tmp, test_dataset=GetData.read_dataset(testfile))
+    ID3desicionTree = ID3.ID3_createTree(dataset, labels_tmp)
     print('ID3desicionTree:\n', ID3desicionTree)
 
-    TreePlotter.ID3_Tree(ID3desicionTree)
+    # TreePlotter.ID3_Tree(ID3desicionTree)
+    TreePlotter.createPlot(ID3desicionTree)
     testSet = GetData.read_dataset(testfile)[0]
     print("下面为测试数据集结果：")
     print('ID3_TestSet_classifyResult:')
@@ -82,5 +66,6 @@ if __name__ == '__main__':
         if result[cal_accuracy] == testSet[cal_accuracy][len(testSet[0])-1]:
             correct = correct + 1
     accuracy = correct / len(testSet)
+    print("correct=%d,len(testSet)=%d"%(correct,len(testSet)))
     print("正确率为：", accuracy)
     print("---------------------------------------------")
